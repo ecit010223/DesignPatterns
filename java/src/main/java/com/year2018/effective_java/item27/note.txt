@@ -1,0 +1,17 @@
+优先考虑泛型方法
+静态工具方法尤其适合于泛型化。
+泛型方法的一个显著特性是，无需明确指定类型参数的值，不像调用泛型构造器的时候是必须指定的（见Union.java）
+注意（在java 1.8中不存在该问题）：类型参数出现在了变量声明的左右两边，显得有些冗余，如下：
+Map<String,List<String>> anagrams = new HashMap<String, List<String>>();
+为了消除这种冗余，可以编写一个泛型静态工厂方法，与想要使用的每个构造器相对应，见GenericStaticFactory.java
+有时，会需要创建不可变但又适合于许多不同类型的对象，则可用泛型单例工厂，见GenericSingletonFactory.java，
+UnaryFunction.java中提供了一个恒等函数，如果在每次需要的时候都重新创建一个，这样会很浪费，因为它是无状态
+的，如果泛型被具体化了，每个类型都需要一个恒等函数，但是它们被擦除以后，就只需要一个泛型单例。
+虽然相对少见，但是通过某个包含该类型参数本身的表达式来限制类型参数是允许的，这就是递归类型限制，递归类型
+限制最普遍的用途与Comparable接口有关，这定义类型的自然顺序：
+public interface Comparable<T>{
+    int compareTo(T o);
+}
+类型参数T定义的类型，可以与实现Comparable<T>的类型的元素进行比较。实际上，几乎所有的类型都只能与它们自身
+的类型的元素相比较，因此，例如String实现Comparable<String>，Integer实现Comparable<Integer>等等。
+见RecursiveTypeBound.java

@@ -1,0 +1,18 @@
+优先考虑类型安全的异构容器
+数据库可以有任意多的列，如果能以类型安全的方式访问所有列就好了，幸运的是，有一种方法可以很容易地做到这一
+点，就是将键进行参数化而不是将容器参数化，然后将参数化的键提交给容器，来插入或者获取值，用泛型系统来确保
+值的类型与它的键相符。
+见Favorites.java
+Class对象充当参数化键的部分，之所以可以这样，是因为类Class在Java 1.5版本中被泛型化了，类的类型从字面上来
+看不再只是简单的Class，而是Class<T>，例如：String.class属于Class<String>类型，Integer.class属于
+Class<Integer>类型。当一个类的字面文字用在方法中，来传达编译时和运行时的类型信息时，就被称作type token。
+Favorites.java有两种局限性1：恶意的客户端可以很轻松地破坏Favorites实例的类型安全，只要以它的原生态形式
+使用Class对象，但会造成客户端代码在编译时产生未受检的警告。这与一般的集合实现，如HashSet和HashMap并没有
+什么区别，你可以很容易地利用原生态类型HashSet将String放进HashSet<Integer>中，也就是说，如果愿意付出一点
+点代价，就可以拥有运行时的类型安全。确保Favorites永远不违背它的类型约束条件的方式是，让putFavorite方法
+检验instance是否真的是type所表示的类型的实例，只要使用一个动态的转换：
+public <T> void putFavorite(Class<T> type, T instance){
+    favorites.put(type,type.cast(instance));
+}
+Favorites.java有两种局限性2：不能用在不可具体化的类型（见item25）中，如List<String>等，原因在于无法为
+List<String>获得一个Class对象，List<String>.Class是个语法错误。

@@ -1,0 +1,58 @@
+利用有限制通配符来提升API的灵活性
+
+Stack.java
+? extends E：E的某个子类型：
+// 执行如下代码：
+Stack<Number> numberStack = new Stack<Number>();
+Iterable<Integer> integers = ... ;
+numberStack.pushAll(integers);
+//pushAll方法应修改如下：
+public void pushAll(Iterable<? extends E> src){
+    for(E e:src){
+        push(e);
+    }
+}
+? super E：E的某种超类：
+Stack<Number> numberStack = new Stack<Number>();
+Collection<Object> objects = ...;
+numberStack.popAll(objects);
+//popAll方法修改如下：
+public void popAll(Collection<? super E> dst){
+    while(!isEmpty()){
+        dst.add(pop());
+    }
+}
+通配符使用助记：PECS(producer-extends,consumer-super)
+意思是：如果参数化类型表示一个T生产者，就使用<? extends T>，如果它表示一个T消费者，就使用<? super T>。
+在Stack.java中，pushAll的src参数产生E实例供Stack使用，因此src相应的类型为Iterator<? extends>;popAll
+的dst参数通过Stack消费E实例，因此dst相应的类型为Collection<? super E>。
+
+见RecursiveTypeBound.java
+public static <T extends Comparable<? super T>> T max(List<? extends T> list)
+最初T被指定用来扩展Comparable<T>，但是T的comparable消费T实例（并产生表示顺序关系的数值）。因此，参数化
+类型Comparable<T>被有限制通配符类型Comparable<? super T>取代。comparable始终是消费者，因此使用时始终
+应该是Comparable<? super T>优先于Comparable<T>。对于comparator也一样，因此使用时始终应该是
+Comparator<? super T>优先于Comparator<T>
+
+Swap.java
+如下两个方法，第一个使用无限制的类型参数，第二个使用无限制的通配符：
+public static <E> void swap(List<E> list, int i, int j);
+public static void swap(List<?> list,int i,int j);
+在公共API中，第二种更好一些，因为它更简单。
+将第二种声明用于swap方法会有一个问题，下面这个简单的实现不能编译：
+public static void swap(List<?> list, int i, int j){
+    list.set(i,list.set(j,list.get(i)));
+}
+错误提示：不能将元素放回到刚刚从中取出的列表中。问题在于list的类型为List<?>，不能把null之外的任何值放到
+List<?>中。有一种方式可以实现这个方法，无需求助于不安全的转换或者原生态类型，就是编写一个私有的辅助方法
+来捕捉通配符类型，为了捕捉类型，辅助方法必须是泛型方法，如下：
+public static void swap(List<?> list, int i, int j){
+    swapHelp(list,i,j);
+}
+private static <E> void swapHelper(List<E> list, int i, int j){
+    list.set(i, list.set(j,list.get(i)));
+}
+swapHelper方法知道list是一个List<E>，因此，它知道从这个列表中取出的任何值均为E类型，并且知道将E类型的任
+何值放进列表都是安全的。swap这个有些费解的实现编译起来却是正确无误的，它允许我们导出swap这个比较好的基于
+通配符的声明，同时在内部利用更加复杂的泛型方法，swap方法的客户端不一定要面对更加复杂的swapHelper声明，但
+是它们的确从中受益。

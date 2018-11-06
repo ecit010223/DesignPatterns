@@ -1,0 +1,14 @@
+考虑实现Comparable接口
+compareTo方法并没有在Object中声明，相反，它是Comparable接口中唯一的方法。
+类实现了Comparable接口，就表明它的实例具有内在的排序关系。为实现Comparable接口的对象数组进行排序如下：
+Arrays.sort(a);
+一旦类实现了Comparable接口，它就可以跟许多泛型算法以及依赖于该接口的集合实现进行协作。
+compareTo方法的通用约定与equals方法相似：
+将这个对象与指定的对象进行比较，当该对象小于、等于或大于指定对象的时候，分别返回一个负整数、零或正整数。
+如果由于指定对象的类型而无法与该对象进行比较，则抛出ClassCastException异常。
+如果两个被比较的对象引用不同类的对象，compareTo可以抛出ClassCastException异常。
+compareTo的约定与equals类型：自反性、对称性和传递性。
+与违反了hashCode约定的类会破坏其它依赖于散列做法的类一样，违反compareTo约定的类也会破坏其它依赖于比较
+关系的类。依赖于比较关系的类包括有序集合类TreeSet和TreeMap，以及工具类Collections和Arrays，它们内部
+包含有搜索和排序算法。
+
