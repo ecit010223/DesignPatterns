@@ -24,6 +24,9 @@ public class BoundedQueue<T> {
     public void add(T t) throws InterruptedException {
         lock.lock();
         try {
+            // 当数组数量等于数组长度时，表示数组已满，当前线程随之释放锁并进入等待状态。
+            // 在添加和删除方法中使用while循环而非if判断，目的是防止过早或意外的通知，
+            // 只有条件符合才能够退出循环。
             while (count == items.length)
                 notFull.await();
             items[addIndex] = t;

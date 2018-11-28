@@ -6,7 +6,7 @@ package com.year2018.pattern.singleton;
  */
 public enum  SingletonEnum {
     INSTANCE;
-    public void doSomthing(){
+    public void doSomething(){
         System.out.println("do sth.");
     }
 }

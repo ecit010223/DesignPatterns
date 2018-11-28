@@ -3,6 +3,7 @@ package com.year2018.concurrency.chapter08;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Author: zyh
@@ -19,7 +20,7 @@ public class ExchangerTest {
             @Override
             public void run() {
                 try {
-                    String A = "银行流水A";// A录入银行流水数据
+                    String A = "record by A";// A录入银行流水数据
                     exgr.exchange(A);
                 } catch (InterruptedException e) {
                 }
@@ -30,9 +31,9 @@ public class ExchangerTest {
             @Override
             public void run() {
                 try {
-                    String B = "银行流水B";// B录入银行流水数据
+                    String B = "record by B";// B录入银行流水数据
                     String A = exgr.exchange("B");
-                    System.out.println("A和B数据是否一致：" + A.equals(B) + "，A录入的是：" + A + "，B录入是：" + B);
+                    System.out.println("A.equals(B):" + A.equals(B) + ",A:" + A + ",B:" + B);
                 } catch (InterruptedException e) {
                 }
             }

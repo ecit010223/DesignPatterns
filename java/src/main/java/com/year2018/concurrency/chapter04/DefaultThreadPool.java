@@ -40,6 +40,9 @@ public class DefaultThreadPool<Job extends Runnable> implements ThreadPool<Job> 
             // 添加一个工作，然后进行通知
             synchronized (jobs) {
                 jobs.addLast(job);
+                //添加一个Job后，对工作队列jobs调用了其notify()方法，而不是notifyAll()方法，因为能够
+                //确定有工作者线程被唤醒，这时使用notify()方法将会比notifyAll()方法获得更小的开销（避免
+                //将等待队列中的线程全部移动到阻塞队列中）。
                 jobs.notify();
             }
         }
@@ -91,7 +94,10 @@ public class DefaultThreadPool<Job extends Runnable> implements ThreadPool<Job> 
         }
     }
 
-    // 工作者，负责消费任务
+    /**
+     * 工作者，负责消费任务。
+     * 每个工作者线程会不断地从jobs上取出一个Job进行执行，当jobs为空时，工作者线程进入等待状态。
+     **/
     class Worker implements Runnable {
         // 是否工作
         private volatile boolean running = true;

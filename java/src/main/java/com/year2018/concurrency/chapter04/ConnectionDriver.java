@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ConnectionDriver {
     static class ConnectionHandler implements InvocationHandler {
+
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("commit")) {
                 TimeUnit.MILLISECONDS.sleep(100);
@@ -22,7 +24,8 @@ public class ConnectionDriver {
 
     // 创建一个Connection的代理，在commit时休眠1秒
     public static final Connection createConnection() {
-        return (Connection) Proxy.newProxyInstance(ConnectionDriver.class.getClassLoader(), new Class<?>[]{Connection.class},
+        return (Connection) Proxy.newProxyInstance(ConnectionDriver.class.getClassLoader(),
+                new Class<?>[]{Connection.class},
                 new ConnectionHandler());
     }
 }

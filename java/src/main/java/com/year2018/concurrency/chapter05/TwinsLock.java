@@ -24,7 +24,8 @@ public class TwinsLock implements Lock {
             setState(count);
         }
 
-        public int tryAcquireShared(int reduceCount) {
+        @Override
+        protected int tryAcquireShared(int reduceCount) {
             for (;;) {
                 int current = getState();
                 int newCount = current - reduceCount;
@@ -34,7 +35,8 @@ public class TwinsLock implements Lock {
             }
         }
 
-        public boolean tryReleaseShared(int returnCount) {
+        @Override
+        protected boolean tryReleaseShared(int returnCount) {
             for (;;) {
                 int current = getState();
                 int newCount = current + returnCount;

@@ -30,6 +30,7 @@ public class WaitNotify {
                     try {
                         System.out.println(Thread.currentThread() + " flag is true. wait @ "
                                 + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+                        // 调用wait()方法后，会释放对象的锁
                         lock.wait();
                     } catch (InterruptedException e) {
                     }
@@ -48,9 +49,11 @@ public class WaitNotify {
                 // 获取lock的锁，然后进行通知，通知时不会释放lock的锁，
                 // 直到当前线程释放了lock后，WaitThread才能从wait方法中返回
                 System.out.println(Thread.currentThread() + " hold lock. notify @ " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+                // 当通知Wait后，但还在Notify手中
                 lock.notifyAll();
                 flag = false;
                 SleepUtils.second(5);
+                // sleep 5秒后，Wait与Notify要重新争锁
             }
             // 再次加锁
             synchronized (lock) {

@@ -2,7 +2,6 @@ package com.year2018.concurrency.chapter02;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

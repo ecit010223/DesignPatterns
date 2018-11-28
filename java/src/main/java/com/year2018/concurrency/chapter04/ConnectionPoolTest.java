@@ -46,6 +46,7 @@ public class ConnectionPoolTest {
 
         public void run() {
             try {
+                //本人分析：此处被每个线程都调用了，但计数值为1，因此只需要调用一次countDown就可以
                 start.await();
             } catch (Exception ex) {
 

@@ -26,6 +26,7 @@ public class CyclicBarrierTest3 {
         try {
             c.await();
         } catch (Exception e) {
+            // 阻塞的线程是否被中断
             System.out.println(c.isBroken());
         }
     }
